@@ -10,7 +10,6 @@ services:
       - ./iipsrv-data:/iipsrv-data
     environment:
       - VERBOSITY=6
-      - LOGFILE=/dev/stdout
       - FILESYSTEM_PREFIX=/iipsrv-data/
       - CORS=*
     ports:

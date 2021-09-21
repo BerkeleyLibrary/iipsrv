@@ -13,25 +13,55 @@ FROM nginx:1.18.0 AS base
 EXPOSE 80
 
 # ==============================
+# Set up shared environment
+
+ENV LOGFILE=/dev/stdout
+
+# ==============================
 # Install dependencies
 
-# TODO: does production need all of these?
+# ==============================
+# Copy configuration files and startup script
+
+COPY /nginx/nginx.conf /etc/nginx/conf.d/default.conf
+COPY iipsrv-entrypoint.sh /
+
+# ==============================
+# Copy test files
+
+COPY iipsrv-test /iipsrv-test
+
+# ==============================
+# Set startup command
+
+CMD /iipsrv-entrypoint.sh
+
+# ==============================
+# Install shared dependencies
+
 RUN apt-get update && \
-    apt-get install -y \
-      autoconf \
-      build-essential \
-      git \
-      libtiff-dev \
-      libtool \
-      pkg-config \
+    apt-get install -y --no-install-recommends \
+      libgomp1 \
       spawn-fcgi
 
 # =============================================================================
 # Target: development
 #
-# The development stage builds iipsrv and installs configuration files.
+# The development stage builds and installs iipsrv.
 
 FROM base AS development
+
+# ==============================
+# Install development tools
+
+RUN apt-get install -y --no-install-recommends \
+      autoconf \
+      automake \
+      build-essential \
+      git \
+      libtiff-dev \
+      libtool \
+      pkg-config
 
 # ==============================
 # Build iipsrv from source
@@ -50,25 +80,12 @@ RUN ./autogen.sh && \
 RUN mkdir /iipsrv
 RUN cp /tmp/iipsrv/src/iipsrv.fcgi /iipsrv
 
-# ==============================
-# Copy configuration files
-
-COPY /nginx/nginx.conf /etc/nginx/conf.d/default.conf
-COPY iipsrv-entrypoint.sh /
-
-CMD /iipsrv-entrypoint.sh
-
 # =============================================================================
 # Target: production
 #
-# The production stage extends the base image with the application and gemset
-# built in the development stage. It includes runtime dependencies but not
-# heavyweight build dependencies.
+# The production stage extends the base image with the binary built in the
+# development stage.
 
 FROM base AS production
 
 COPY --from=development /iipsrv /iipsrv
-COPY --from=development /etc/nginx /etc/nginx
-COPY --from=development /iipsrv-entrypoint.sh /iipsrv-entrypoint.sh
-
-CMD /iipsrv-entrypoint.sh
