@@ -7,10 +7,9 @@ services:
       target: production
     init: true
     volumes:
-      - ./iipsrv-data:/iipsrv-data
+      - ./artifacts:/opt/app/artifacts
     environment:
       - VERBOSITY=6
-      - FILESYSTEM_PREFIX=/iipsrv-data/
       - CORS=*
     ports:
       - 80:80

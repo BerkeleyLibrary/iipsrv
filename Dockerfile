@@ -18,11 +18,6 @@ EXPOSE 80
 ENV LOGFILE=/dev/stdout
 
 # ==============================
-# UCB conventional "app" directory
-
-WORKDIR /opt/app
-
-# ==============================
 # Install shared dependencies
 
 RUN apt-get update && \
@@ -36,9 +31,15 @@ RUN apt-get update && \
 COPY /nginx/nginx.conf /etc/nginx/conf.d/default.conf
 
 # ==============================
+# UCB conventional "app" directory
+
+WORKDIR /opt/app
+
+# ==============================
 # Set startup command
 
-COPY iipsrv-entrypoint.sh .
+# Note we don't actually copy this command till later, since
+# we're likely to edit it and don't want to bust the cache.
 CMD ./iipsrv-entrypoint.sh
 
 # =============================================================================
@@ -86,6 +87,11 @@ WORKDIR /opt/app
 # Copy test files
 
 COPY test test
+
+# ==============================
+# Copy startup script
+
+COPY iipsrv-entrypoint.sh .
 
 # =============================================================================
 # Target: production

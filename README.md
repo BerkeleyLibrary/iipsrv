@@ -5,6 +5,21 @@ running on [nginx](http://nginx.org/en/) with FastCGI.
 
 (Forked from [iiip-nginx-single](https://git.lib.berkeley.edu/lap/iiip-nginx-single).)
 
+## Configuration
+
+When using this image, either on its own or with the included
+[`docker-compose.yml`](docker-compose.yml), take note of the following
+environment variables:
+
+| Variable          | Purpose                                         | Default                                                  | Notes                           |
+| ---               | ---                                             | ---                                                      | ---                             |
+| FILESYSTEM_PREFIX | path to the image file directory                | none (but see below under "[Image files](#image-files)") | **must** include trailing slash |
+| LOGFILE           | IIPImage log output                             | `/dev/stdout` (in Dockerfile)                            |                                 |
+| CORS              | CORS `Access-Control-Allow-Origin` header value | `*` (in `docker-compose.yml`; none in Dockerfile)        |                                 |
+
+See the [IIPImage docs](https://iipimage.sourceforge.io/documentation/server/#configuration)
+for a full list of environment variables.
+
 ## Notes for developers
 
 ### Default development configuration
@@ -16,19 +31,23 @@ To build and run the container based on the configuration in
 
 ```sh
 docker-compose build --pull
-docker compose up
+docker-compose up
 ```
 
 Note that nginx/IIPImage runs on port 80, and is exposed on host port 80.
 
-The `iipsrv-data` directory is not copied into the container, but is mounted
-as a volume when running with `docker-compose`. Any files in this directory
-will be available to the container under `/iipsrv-data`.
+### Image files
+
+By default, the [`iipsrv-entrypoint.sh`](iipsrv-entrypoint.sh) script will
+cause files to be served from the `test/data` directory.
+
+You can override this mount by passing a `$FILESYSTEM` value to
+the container; see below under ["Custom configuration"](#custom-configuration).
 
 #### Testing
 
 To test that the container has come up correctly, using the image file
-[`iipsrv-data/test.tif`](iipsrv-data/test.tif):
+[`test/data/test.tif`](test/data/test.tif):
 
 ```sh
 curl -v 'http://localhost/iiif/test.tif/info.json'
@@ -69,7 +88,6 @@ in JSON format, e.g.:
 
 You also can build an image directly from the Dockerfile and point it at an
 external image directory.
-
 
 ```sh
 docker build . -t iipsrv:latest
