@@ -3,6 +3,8 @@
 A single-container deployment of [IIPImage](https://iipimage.sourceforge.io),
 running on [nginx](http://nginx.org/en/) with FastCGI.
 
+(Forked from [iiip-nginx-single](https://git.lib.berkeley.edu/lap/iiip-nginx-single).)
+
 ## Notes for developers
 
 To build and run the container based on the configuration in
