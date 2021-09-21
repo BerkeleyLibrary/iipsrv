@@ -1,3 +1,3 @@
 dockerComposePipeline(
-  commands: ['curl -v http://localhost/iiif/test.tif/info.json']
+  commands: [exec: 'curl -v http://localhost/iiif/test.tif/info.json']
 )
