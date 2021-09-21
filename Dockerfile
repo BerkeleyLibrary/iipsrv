@@ -18,23 +18,9 @@ EXPOSE 80
 ENV LOGFILE=/dev/stdout
 
 # ==============================
-# Install dependencies
+# UCB conventional "app" directory
 
-# ==============================
-# Copy configuration files and startup script
-
-COPY /nginx/nginx.conf /etc/nginx/conf.d/default.conf
-COPY iipsrv-entrypoint.sh /
-
-# ==============================
-# Copy test files
-
-COPY iipsrv-test /iipsrv-test
-
-# ==============================
-# Set startup command
-
-CMD /iipsrv-entrypoint.sh
+WORKDIR /opt/app
 
 # ==============================
 # Install shared dependencies
@@ -43,6 +29,17 @@ RUN apt-get update && \
     apt-get install -y --no-install-recommends \
       libgomp1 \
       spawn-fcgi
+
+# ==============================
+# Copy configuration files
+
+COPY /nginx/nginx.conf /etc/nginx/conf.d/default.conf
+
+# ==============================
+# Set startup command
+
+COPY iipsrv-entrypoint.sh .
+CMD ./iipsrv-entrypoint.sh
 
 # =============================================================================
 # Target: development
@@ -64,21 +61,31 @@ RUN apt-get install -y --no-install-recommends \
       pkg-config
 
 # ==============================
-# Build iipsrv from source
+# Build and install iipsrv from source
 
-RUN git clone --depth 1 --branch iipsrv-1.1 https://github.com/ruven/iipsrv /tmp/iipsrv
+# Clone iipsrv repo
+WORKDIR /tmp
+RUN git clone --depth 1 --branch iipsrv-1.1 https://github.com/ruven/iipsrv
 
-WORKDIR /tmp/iipsrv
-
+# Build iipsrv binary
+WORKDIR iipsrv
 RUN ./autogen.sh && \
     ./configure && \
     make
 
-# ==============================
 # Install newly build iipsrv binary
-
 RUN mkdir /iipsrv
-RUN cp /tmp/iipsrv/src/iipsrv.fcgi /iipsrv
+RUN cp src/iipsrv.fcgi /iipsrv
+
+# ==============================
+# Return to app directory
+
+WORKDIR /opt/app
+
+# ==============================
+# Copy test files
+
+COPY test test
 
 # =============================================================================
 # Target: production
@@ -89,3 +96,4 @@ RUN cp /tmp/iipsrv/src/iipsrv.fcgi /iipsrv
 FROM base AS production
 
 COPY --from=development /iipsrv /iipsrv
+COPY --from=development /opt/app /opt/app

@@ -8,6 +8,9 @@
 # Ignore IDE config files
 .idea/*
 
+# Ignore build artifacts
+artifacts/*
+
 # Ignore devops files
 Jenkinsfile
 Dockerfile

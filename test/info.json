@@ -1,0 +1,25 @@
+{
+  "@context" : "http://iiif.io/api/image/2/context.json",
+  "@id" : "http://localhost/iiif/test.tif",
+  "protocol" : "http://iiif.io/api/image",
+  "width" : 2769,
+  "height" : 3855,
+  "sizes" : [
+     { "width" : 173, "height" : 240 },
+     { "width" : 346, "height" : 481 },
+     { "width" : 692, "height" : 963 },
+     { "width" : 1384, "height" : 1927 }
+  ],
+  "tiles" : [
+     { "width" : 256, "height" : 256, "scaleFactors" : [ 1, 2, 4, 8, 16 ] }
+  ],
+  "profile" : [
+     "http://iiif.io/api/image/2/level1.json",
+     { "formats" : [ "jpg" ],
+       "qualities" : [ "native","color","gray","bitonal" ],
+       "supports" : ["regionByPct","regionSquare","sizeByForcedWh","sizeByWh","sizeAboveFull","rotationBy90s","mirroring"],
+       "maxWidth" : 5000,
+       "maxHeight" : 5000
+     }
+  ]
+}

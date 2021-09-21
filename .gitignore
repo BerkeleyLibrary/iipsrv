@@ -1,4 +1,10 @@
 ##################################################################
+# Custom ignores
+
+# Ignore build artifacts
+artifacts/*
+
+##################################################################
 # Generated ignores
 
 #### joe made this: http://goel.io/joe
