@@ -1,0 +1,17 @@
+# Ignore .env
+.env
+
+# Ignore git
+.git
+.gitignore
+
+# Ignore IDE config files
+.idea/*
+
+# Ignore devops files
+Jenkinsfile
+Dockerfile
+docker-compose*
+
+# Ignore test data
+iipsrv-data/*

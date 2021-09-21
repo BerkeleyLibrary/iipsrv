@@ -1,0 +1,21 @@
+version: "3.7"
+
+services:
+  iipsrv:
+    build:
+      context: .
+      target: production
+    init: true
+    volumes:
+      - ./iipsrv-data:/iipsrv-data
+    environment:
+      - VERBOSITY=6
+      - LOGFILE=/dev/stdout
+      - FILESYSTEM_PREFIX=/iipsrv-data/
+      - CORS=*
+    ports:
+      - 80:80
+    networks:
+      default:
+        aliases:
+          - iipsrv.test
