@@ -5,7 +5,7 @@
 # the application, such as installing ca-certificates, creating the app user,
 # and installing runtime system dependencies.
 
-FROM nginx:1.18.0 AS base
+FROM nginx:1 AS base
 
 # This declares that the container intends to listen on port 3000. It doesn't
 # actually "expose" the port anywhere -- it is just metadata. It advises tools
@@ -40,7 +40,7 @@ WORKDIR /opt/app
 
 # Note we don't actually copy this command till later, since
 # we're likely to edit it and don't want to bust the cache.
-CMD ./iipsrv-entrypoint.sh
+CMD ["./iipsrv-entrypoint.sh"]
 
 # =============================================================================
 # Target: development
