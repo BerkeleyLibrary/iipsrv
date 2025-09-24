@@ -1,7 +1,5 @@
-version: "3.7"
-
 services:
-  iipsrv:
+  app:
     build:
       context: .
       target: production
