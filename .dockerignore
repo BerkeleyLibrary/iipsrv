@@ -4,6 +4,7 @@
 # Ignore git
 .git
 .gitignore
+.github
 
 # Ignore IDE config files
 .idea/*
