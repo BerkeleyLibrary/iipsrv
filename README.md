@@ -3,8 +3,6 @@
 A single-container deployment of [IIPImage](https://iipimage.sourceforge.io),
 running on [nginx](http://nginx.org/en/) with FastCGI.
 
-(Forked from [iiip-nginx-single](https://git.lib.berkeley.edu/lap/iiip-nginx-single).)
-
 ## Configuration
 
 When using this image, either on its own or with the included
@@ -19,6 +17,13 @@ environment variables:
 
 See the [IIPImage docs](https://iipimage.sourceforge.io/documentation/server/#configuration)
 for a full list of environment variables.
+
+In addition, the Dockerfile uses the `IIPSRV_VERSION` and `IIPSRV_BUILD_REF`
+build arguments to specify the version of IIPImage to compile for the image.
+`IIP_VERSION` assumes Git tags of the format `iipsrv-${IIP_VERSION}` are
+being created upstream; `IIPSRV_BUILD_REF` is used to specify an alternate
+branch or tag name that may not be in this format.
+
 
 ## Notes for developers
 
@@ -41,7 +46,7 @@ Note that nginx/IIPImage runs on port 80, and is exposed on host port 80.
 By default, the [`iipsrv-entrypoint.sh`](iipsrv-entrypoint.sh) script will
 cause files to be served from the `test/data` directory.
 
-You can override this mount by passing a `$FILESYSTEM` value to
+You can override this mount by passing a `$FILESYSTEM_PREFIX` value to
 the container; see below under ["Custom configuration"](#custom-configuration).
 
 #### Testing
@@ -53,13 +58,12 @@ To test that the container has come up correctly, using the image file
 curl -v 'http://localhost/iiif/test.tif/info.json'
 ```
 
-This should produce a IIIF [information response](https://iiif.io/api/image/2.0/#information-request)
+This should produce a IIIF [information response](https://iiif.io/api/image/3.0/#51-image-information-request)
 in JSON format, e.g.:
 
 ```json
 {
-  "@context" : "http://iiif.io/api/image/2/context.json",
-  "@id" : "http://localhost/iiif/test.tif",
+  "@context" : "http://iiif.io/api/image/3/context.json",
   "protocol" : "http://iiif.io/api/image",
   "width" : 2769,
   "height" : 3855,
@@ -72,15 +76,23 @@ in JSON format, e.g.:
   "tiles" : [
      { "width" : 256, "height" : 256, "scaleFactors" : [ 1, 2, 4, 8, 16 ] }
   ],
-  "profile" : [
-     "http://iiif.io/api/image/2/level1.json",
-     { "formats" : [ "jpg" ],
-       "qualities" : [ "native","color","gray","bitonal" ],
-       "supports" : ["regionByPct","regionSquare","sizeByForcedWh","sizeByWh","sizeAboveFull","rotationBy90s","mirroring"],
-       "maxWidth" : 5000,
-       "maxHeight" : 5000
-     }
+  "id" : "http://localhost/iiif/test.tif",
+  "type": "ImageService3",
+  "profile" : "level1",
+  "maxWidth" : 5000,
+  "maxHeight" : 5000,
+  "extraQualities": ["color","gray","bitonal"],
+  "extraFormats": ["tif","webp"],
+  "extraFeatures": ["regionByPct","sizeByPct","sizeByConfinedWh","sizeUpscaling","rotationBy90s","mirroring"],
+  "service": [
+    {
+      "@context": "http://iiif.io/api/annex/services/physdim/1/context.json",
+      "profile": "http://iiif.io/api/annex/services/physdim",
+      "physicalScale": 0.00846667,
+      "physicalUnits": "cm"
+    }
   ]
+
 }
 ```
 

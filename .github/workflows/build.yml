@@ -142,6 +142,21 @@ jobs:
         run: |
           docker compose exec app test/test.sh
 
+      - name: Copy out artifacts
+        if: ${{ always() }}
+        run: |
+          docker compose cp app:/opt/app/artifacts ./
+          docker compose logs > artifacts/docker-compose-services.log
+          docker compose config > artifacts/docker-compose.merged.yml
+
+      - name: Upload the test report
+        if: ${{ always() }}
+        uses: actions/upload-artifact@v4
+        with:
+          name: iipsrv Build Report (${{ github.run_id }}_${{ github.run_attempt }})
+          path: artifacts/*
+          if-no-files-found: error
+
   push:
     runs-on: ubuntu-latest
     needs:
