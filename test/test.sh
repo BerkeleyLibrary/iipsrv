@@ -47,13 +47,16 @@ assert_identical() {
 ############################################################
 # Fixture
 
+HEALTHCHECK_URL='http://localhost/health'
 INFO_URL='http://localhost/iiif/test.tif/info.json'
 IMAGE_URL='http://localhost/iiif/test.tif/full/64,/0/default.jpg'
 
+EXPECTED_HEALTHCHECK_PATH="test/health.html"
 EXPECTED_INFO_PATH="test/info.json"
 EXPECTED_IMAGE_PATH="test/default.jpg"
 
 ARTIFACTS_DIR="artifacts"
+ACTUAL_HEALTHCHECK_PATH="${ARTIFACTS_DIR}/health.html"
 ACTUAL_INFO_PATH="${ARTIFACTS_DIR}/info.json"
 ACTUAL_IMAGE_PATH="${ARTIFACTS_DIR}/default.jpg"
 
@@ -72,6 +75,17 @@ echo
 
 ############################################################
 # Tests
+
+echo '------------------------------------------------------------'
+echo 'Making healthcheck request:'
+echo
+download "${HEALTHCHECK_URL}" "${ACTUAL_HEALTHCHECK_PATH}"
+echo
+
+echo '------------------------------------------------------------'
+echo 'Verifying healthcheck result:'
+echo
+assert_identical "${EXPECTED_HEALTHCHECK_PATH}" "${ACTUAL_HEALTHCHECK_PATH}"
 
 echo '------------------------------------------------------------'
 echo 'Making IIIF info request:'
