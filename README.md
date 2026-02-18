@@ -18,6 +18,13 @@ environment variables:
 See the [IIPImage docs](https://iipimage.sourceforge.io/documentation/server/#configuration)
 for a full list of environment variables.
 
+In addition, the Dockerfile uses the `IIPSRV_VERSION` and `IIPSRV_BUILD_REF`
+build arguments to specify the version of IIPImage to compile for the image.
+`IIP_VERSION` assumes Git tags of the format `iipsrv-${IIP_VERSION}` are
+being created upstream; `IIPSRV_BUILD_REF` is used to specify an alternate
+branch or tag name that may not be in this format.
+
+
 ## Notes for developers
 
 ### Default development configuration
