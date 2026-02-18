@@ -1,4 +1,12 @@
 # =============================================================================
+#
+# These ARGs are used to determine the version of IIPImage to
+# build. IIPSRV_BUILD_REF is intended to map to a Git tag or
+# branch.
+ARG IIPSRV_VERSION="1.3"
+ARG IIPSRV_BUILD_REF="iipsrv-${IIPSRV_VERSION:-1.3}"
+
+# =============================================================================
 # Target: base
 #
 # The base stage scaffolds elements which are common to building and running
@@ -23,6 +31,7 @@ ENV LOGFILE=/dev/stdout
 RUN apt-get update && \
     apt-get install -y --no-install-recommends \
       libgomp1 \
+      libwebpmux3 \
       spawn-fcgi
 
 # ==============================
@@ -49,6 +58,8 @@ CMD ["./iipsrv-entrypoint.sh"]
 
 FROM base AS development
 
+ARG IIPSRV_BUILD_REF
+
 # ==============================
 # Install development tools
 
@@ -66,10 +77,10 @@ RUN apt-get install -y --no-install-recommends \
 
 # Clone iipsrv repo
 WORKDIR /tmp
-RUN git clone --depth 1 --branch iipsrv-1.1 https://github.com/ruven/iipsrv
+RUN git clone --depth 1 --branch "${IIPSRV_BUILD_REF}" https://github.com/ruven/iipsrv
 
 # Build iipsrv binary
-WORKDIR iipsrv
+WORKDIR /tmp/iipsrv
 RUN ./autogen.sh && \
     ./configure && \
     make
